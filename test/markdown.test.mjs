@@ -106,6 +106,38 @@ test('generateDesignMd does not invent token defaults when extraction data is ab
   assert.match(output, /without redesigning or correcting the source site/);
 });
 
+test('generateDesignMd emits observed advanced typography fields', () => {
+  const output = generateDesignMd({
+    url: 'https://type.example',
+    typography: {
+      styles: [
+        {
+          context: 'button',
+          family: 'Inter Variable',
+          size: '14px (0.88rem)',
+          weight: 550,
+          lineHeight: '1.20',
+          spacing: '0.04em',
+          fontFeatures: '"tnum", "ss01"',
+          fontVariation: '"wght" 550, "opsz" 14',
+        },
+        {
+          context: 'body',
+          family: 'Inter',
+          size: '16px (1.00rem)',
+          weight: 400,
+          lineHeight: '1.50',
+          fontFeatures: 'normal',
+        },
+      ],
+    },
+  });
+
+  assert.doesNotMatch(output, /^version:/m);
+  assert.match(output, /label-lg:\n    fontFamily: "Inter Variable"\n    fontSize: "14px"\n    fontWeight: 550\n    lineHeight: 1.2\n    letterSpacing: "0.04em"\n    fontFeature: "\\"tnum\\", \\"ss01\\""\n    fontVariation: "\\"wght\\" 550, \\"opsz\\" 14"/);
+  assert.doesNotMatch(output, /body-md:[\s\S]*fontFeature: "normal"/);
+});
+
 test('generateDesignMd does not promote transparent colors to opaque tokens', () => {
   const output = generateDesignMd({
     url: 'https://transparent.example',
